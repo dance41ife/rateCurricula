@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.dao.SubjectDao">
+    <select id="findOneSubject" resultType="Subject">
+        select * from Subject_t where subject_id = #{userName};
+    </select>
+    <select id="selectAllSubjectByUserName" parameterType="int" resultType="RespSubject">
+        Select subject.subject_id, subject.subject_name, user2.user_name create_by, subject.create_date, subject.expire_date, subject.subject_path, subject.courseDesc, subject.attribute2, subject.attribute3,
+            subject.profile,subject.point,subject.subject_tag
+            from Subject_t subject,User_t user1,UserSubject_rel_t rel,User_t user2
+        Where 1=1
+            And user2.user_id = subject.create_by
+            And rel.subject_id = subject.subject_id
+            And user1.user_id = rel.user_id
+            And (user1.user_id = #{userId} Or #{userId} = -1);
+    </select>
+    <insert id="insertSingleSubject">
+        insert into Subject_t(
+        subject_name, create_by, create_date, expire_date, subject_path, courseDesc, profile,point,subject_tag
+        )
+        values (
+        #{subject_name},#{create_by},#{create_date},#{expire_date},#{subject_path},#{courseDesc},#{profile},#{point},#{subject_tag}
+        );
+    </insert>
+    <select id="selectAllSubject" resultType="RespSubject">
+        Select t.subject_id, t.subject_name, user.user_name create_by, t.create_date, t.expire_date, t.subject_path, t.courseDesc, t.courseDesc, t.attribute3,t.profile,t.point,t.subject_tag from Subject_t t,User_t user
+        Where 1=1
+        And user.user_id = t.create_by;
+    </select>
+
+    <insert id="insertSingleRel">
+        insert into UserSubject_rel_t(user_id, subject_id)
+        values (#{user_id},#{subject_id});
+    </insert>
+
+    <select id="selectAllSubjectByCreator" parameterType="int" resultType="SubjectCreatorRes">
+        Select t.subject_id, t.subject_name, u.user_name create_by, t.create_date, t.expire_date, t.subject_path, t.courseDesc, t.attribute2, t.attribute3, t.profile,t.point,t.subject_tag from Subject_t t,User_t u
+        Where t.create_by = #{userId} and u.user_id = t.create_by
+    </select>
+
+    <select id="getUserSubjectRelByUserId" parameterType="int" resultType="Rel">
+        select * from UserSubject_rel_t where user_id = #{userId}
+    </select>
+    <delete id="deleteUserSubjectRelation" parameterType="int">
+        delete from UserSubject_rel_t where user_id=#{userId} and subject_id = #{subjectId}
+    </delete>
+
+    <insert id="insertComment">
+        insert into comment_t(user_id,subject_id,comment,create_date)
+        values (#{userId},#{subjectId},#{comment},#{date})
+    </insert>
+
+    <select id="getCommentBySubjectId" resultType="CommentViewModel">
+        select c.id, c.comment, u.user_name from comment_t c, User_t u
+        where c.subject_id = #{subjectId} and c.user_id = u.user_id
+    </select>
+
+    <select id="selectAllValidSubjectByUserName" parameterType="String" resultType="RespSubject">
+        Select subject.subject_id, subject.subject_name, user2.user_name create_by, subject.create_date, subject.expire_date, subject.subject_path, subject.courseDesc, subject.attribute2, subject.attribute3,subject.subject_tag
+            from Subject_t subject,User_t user1,UserSubject_rel_t rel,User_t user2
+        Where 1=1
+            And user2.user_id = subject.create_by
+            And rel.subject_id = subject.subject_id
+            And user1.user_id = rel.user_id
+            And user1.user_name = #{user_name}
+            And subject.expire_date > sysdate();
+    </select>
+
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.dao.QuesDao">
+    <insert id="insertSingleQues">
+    insert into Question_t(
+    subject_id, ques_type, ques_desc, answer1, answer2, answer3, answer4, true_answer,create_by
+    )values (#{subject_id},#{ques_type},#{ques_desc},#{answer1},#{answer2},#{answer3},#{answer4},#{true_answer},#{create_by});
+    </insert>
+
+    <select id="selectAllQuesBySubject" parameterType="int" resultType="RespQues">
+        Select * from Question_t t
+        Where 1=1
+            And t.subject_id = #{subjectId}
+    </select>
+</mapper>
